@@ -1,12 +1,4 @@
-# boada-post1-u11 — Refactorización Guiada por Pruebas
-
-**Curso:** Patrones de Diseño de Software · Unidad 11  
-**Estudiante:** Richard Boada  
-**Repositorio:** https://github.com/richardrabt21/boada-post1-u11
-
-> Post-contenido — Refactorización Guiada por Pruebas: Code Smells, Paquetes y Acoplamiento en un Proyecto Java Real
-
----
+# Refactorización Guiada por Pruebas: Code Smells, Paquetes y Acoplamiento
 
 ## Estructura del proyecto
 
