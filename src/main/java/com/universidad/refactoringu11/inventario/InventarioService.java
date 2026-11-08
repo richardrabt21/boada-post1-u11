@@ -14,24 +14,31 @@ public class InventarioService {
         productos.add(producto);
     }
 
-    // Long Method: valida, busca, actualiza stock, calcula reorden
-    // y registra/alerta, todo en un solo metodo (Bloater)
     public String actualizarInventario(Long productoId, int cantidad, String tipoMovimiento) {
-
-        // Validacion de entrada (deberia ser responsabilidad propia)
-        if (productoId == null || cantidad == 0
-                || (!tipoMovimiento.equals("ENTRADA") && !tipoMovimiento.equals("SALIDA"))) {
-            return "ERROR_DATOS_INVALIDOS";
-        }
-
-        // Busqueda del producto (mezclada con la logica de negocio)
-        Producto producto = null;
-        for (Producto p : productos) {
-            if (p.getId().equals(productoId)) { producto = p; break; }
-        }
+        if (!esEntradaValida(productoId, cantidad, tipoMovimiento)) return "ERROR_DATOS_INVALIDOS";
+        Producto producto = buscarProducto(productoId);
         if (producto == null) return "ERROR_PRODUCTO_NO_EXISTE";
+        String errorStock = aplicarMovimiento(producto, cantidad, tipoMovimiento);
+        if (errorStock != null) return errorStock;
+        int nuevoStock = producto.getStock();
+        registrarMovimiento(producto, cantidad, tipoMovimiento, nuevoStock);
+        return evaluarReorden(producto, nuevoStock);
+    }
 
-        // Actualizacion de stock
+    private boolean esEntradaValida(Long productoId, int cantidad, String tipoMovimiento) {
+        return productoId != null
+                && cantidad != 0
+                && (tipoMovimiento.equals("ENTRADA") || tipoMovimiento.equals("SALIDA"));
+    }
+
+    private Producto buscarProducto(Long productoId) {
+        return productos.stream()
+                .filter(p -> p.getId().equals(productoId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private String aplicarMovimiento(Producto producto, int cantidad, String tipoMovimiento) {
         int nuevoStock;
         if (tipoMovimiento.equals("ENTRADA")) {
             nuevoStock = producto.getStock() + cantidad;
@@ -40,24 +47,29 @@ public class InventarioService {
             if (nuevoStock < 0) return "ERROR_STOCK_INSUFICIENTE";
         }
         producto.setStock(nuevoStock);
+        return null;
+    }
 
-        // Calculo de cantidad de reorden (otra responsabilidad distinta)
-        boolean necesitaReorden = nuevoStock < producto.getStockMinimo();
-        int cantidadReorden = necesitaReorden
-                ? (producto.getStockMinimo() * 3) - nuevoStock : 0;
-
-        // Registro del movimiento (responsabilidad de auditoria)
+    private void registrarMovimiento(Producto producto, int cantidad,
+                                     String tipoMovimiento, int nuevoStock) {
         String registro = tipoMovimiento + " de " + cantidad + " unidades de "
                 + producto.getNombre() + " -> stock final: " + nuevoStock;
         movimientos.add(registro);
         System.out.println(registro);
-
-        // Decision de alerta (responsabilidad de notificacion)
-        if (necesitaReorden) {
-            System.out.println("ALERTA: " + producto.getNombre()
-                    + " bajo stock minimo. Reordenar " + cantidadReorden + " unidades.");
-            return "OK_BAJO_STOCK_REORDEN_" + cantidadReorden;
-        }
-        return "OK_" + nuevoStock;
     }
+
+    private String evaluarReorden(Producto producto, int nuevoStock) {
+        boolean necesitaReorden = nuevoStock < producto.getStockMinimo();
+        if (!necesitaReorden) return "OK_" + nuevoStock;
+        int cantidadReorden = calcularCantidadReorden(producto.getStockMinimo(), nuevoStock);
+        System.out.println("ALERTA: " + producto.getNombre()
+                + " bajo stock minimo. Reordenar " + cantidadReorden + " unidades.");
+        return "OK_BAJO_STOCK_REORDEN_" + cantidadReorden;
+    }
+
+    private int calcularCantidadReorden(int stockMinimo, int nuevoStock) {
+        return (stockMinimo * 3) - nuevoStock;
+    }
+
+    public List<String> getMovimientos() { return movimientos; }
 }
