@@ -1,10 +1,10 @@
-﻿# boada-post1-u11 â€” RefactorizaciÃ³n Guiada por Pruebas
+# boada-post1-u11 — Refactorización Guiada por Pruebas
 
-**Curso:** Patrones de DiseÃ±o de Software Â· Unidad 11  
+**Curso:** Patrones de Diseño de Software · Unidad 11  
 **Estudiante:** Richard Boada  
 **Repositorio:** https://github.com/richardrabt21/boada-post1-u11
 
-> Post-contenido â€” RefactorizaciÃ³n Guiada por Pruebas: Code Smells, Paquetes y Acoplamiento en un Proyecto Java Real
+> Post-contenido — Refactorización Guiada por Pruebas: Code Smells, Paquetes y Acoplamiento en un Proyecto Java Real
 
 ---
 
@@ -12,47 +12,47 @@
 
 ```
 refactoring-u11/
-â”œâ”€â”€ pom.xml
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/universidad/refactoringu11/
-    â”‚   â”œâ”€â”€ RefactoringU11Application.java
-    â”‚   â”œâ”€â”€ inventario/
-    â”‚   â”‚   â”œâ”€â”€ TipoProducto.java          â† enum con polimorfismo (Parte 1)
-    â”‚   â”‚   â”œâ”€â”€ Producto.java
-    â”‚   â”‚   â”œâ”€â”€ InventarioService.java     â† Long Method eliminado (Parte 1)
-    â”‚   â”‚   â”œâ”€â”€ ClasificadorProducto.java  â† Switch eliminado (Parte 1)
-    â”‚   â”‚   â”œâ”€â”€ EtiquetadoProducto.java    â† Switch eliminado (Parte 1)
-    â”‚   â”‚   â””â”€â”€ NotificadorBajoStock.java  â† interfaz DIP (Parte 2)
-    â”‚   â””â”€â”€ reportes/
-    â”‚       â””â”€â”€ ReporteBajoStockService.java â† implementa NotificadorBajoStock
-    â””â”€â”€ test/java/com/universidad/refactoringu11/
-        â”œâ”€â”€ inventario/
-        â”‚   â”œâ”€â”€ InventarioServiceTest.java
-        â”‚   â”œâ”€â”€ ClasificadorProductoTest.java
-        â”‚   â””â”€â”€ EtiquetadoProductoTest.java
-        â””â”€â”€ ArquitecturaPaquetesTest.java
+├── pom.xml
+└── src/
+    ├── main/java/com/universidad/refactoringu11/
+    │   ├── RefactoringU11Application.java
+    │   ├── inventario/
+    │   │   ├── TipoProducto.java          ← enum con polimorfismo (Parte 1)
+    │   │   ├── Producto.java
+    │   │   ├── InventarioService.java     ← Long Method eliminado (Parte 1)
+    │   │   ├── ClasificadorProducto.java  ← Switch eliminado (Parte 1)
+    │   │   ├── EtiquetadoProducto.java    ← Switch eliminado (Parte 1)
+    │   │   └── NotificadorBajoStock.java  ← interfaz DIP (Parte 2)
+    │   └── reportes/
+    │       └── ReporteBajoStockService.java ← implementa NotificadorBajoStock
+    └── test/java/com/universidad/refactoringu11/
+        ├── inventario/
+        │   ├── InventarioServiceTest.java
+        │   ├── ClasificadorProductoTest.java
+        │   └── EtiquetadoProductoTest.java
+        └── ArquitecturaPaquetesTest.java
 ```
 
 ---
 
-## Parte 1 â€” Red de Seguridad y RefactorizaciÃ³n Guiada por Evidencia
+## Parte 1 — Red de Seguridad y Refactorización Guiada por Evidencia
 
 ### Code Smell 1: Long Method en `actualizarInventario()`
 
 #### Antes de refactorizar
 
-El mÃ©todo `actualizarInventario()` tenÃ­a **52 lÃ­neas** y mezclaba **5 responsabilidades** en un Ãºnico bloque:
+El método `actualizarInventario()` tenía **52 líneas** y mezclaba **5 responsabilidades** en un único bloque:
 
-| # | Responsabilidad | LÃ­neas aprox. |
+| # | Responsabilidad | Líneas aprox. |
 |---|---|---|
-| 1 | ValidaciÃ³n de entrada | 4 |
-| 2 | BÃºsqueda del producto | 5 |
-| 3 | ActualizaciÃ³n de stock | 8 |
-| 4 | CÃ¡lculo de cantidad de reorden | 3 |
+| 1 | Validación de entrada | 4 |
+| 2 | Búsqueda del producto | 5 |
+| 3 | Actualización de stock | 8 |
+| 4 | Cálculo de cantidad de reorden | 3 |
 | 5 | Registro/alerta | 10 |
 
 ```java
-// ANTES â€” un solo mÃ©todo de >35 lÃ­neas mezclando 5 responsabilidades
+// ANTES — un solo método de >35 líneas mezclando 5 responsabilidades
 public String actualizarInventario(Long productoId, int cantidad, String tipoMovimiento) {
     // Validacion de entrada
     if (productoId == null || cantidad == 0
@@ -90,10 +90,10 @@ public String actualizarInventario(Long productoId, int cantidad, String tipoMov
 }
 ```
 
-#### DespuÃ©s de refactorizar (tÃ©cnica: *Extract Method* â€” Fowler, cap. 6)
+#### Después de refactorizar (técnica: *Extract Method* — Fowler, cap. 6)
 
 ```java
-// DESPUÃ‰S â€” mÃ©todo principal de 10 lÃ­neas, delega en mÃ©todos privados nombrados
+// DESPUÉS — método principal de 10 líneas, delega en métodos privados nombrados
 public String actualizarInventario(Long productoId, int cantidad, String tipoMovimiento) {
     if (!esEntradaValida(productoId, cantidad, tipoMovimiento)) return "ERROR_DATOS_INVALIDOS";
     Producto producto = buscarProducto(productoId);
@@ -106,7 +106,7 @@ public String actualizarInventario(Long productoId, int cantidad, String tipoMov
 }
 ```
 
-**Resultado:** `actualizarInventario()` pasÃ³ de **52 â†’ 10 lÃ­neas**. Cada responsabilidad vive en su propio mÃ©todo privado con nombre que revela intenciÃ³n.
+**Resultado:** `actualizarInventario()` pasó de **52 → 10 líneas**. Cada responsabilidad vive en su propio método privado con nombre que revela intención.
 
 ---
 
@@ -114,10 +114,10 @@ public String actualizarInventario(Long productoId, int cantidad, String tipoMov
 
 #### Antes de refactorizar
 
-El mismo `switch` sobre `TipoProducto` con las 4 ramas idÃ©nticas aparecÃ­a en dos clases distintas:
+El mismo `switch` sobre `TipoProducto` con las 4 ramas idénticas aparecía en dos clases distintas:
 
 ```java
-// ClasificadorProducto.java â€” switch #1
+// ClasificadorProducto.java — switch #1
 public double calcularRecargoEnvio(Producto producto) {
     switch (producto.getTipo()) {
         case LIBRO:       return 0.0;
@@ -128,7 +128,7 @@ public double calcularRecargoEnvio(Producto producto) {
     }
 }
 
-// EtiquetadoProducto.java â€” switch #2 (mismo esqueleto, distinta lÃ³gica)
+// EtiquetadoProducto.java — switch #2 (mismo esqueleto, distinta lógica)
 public String generarEtiqueta(Producto producto) {
     switch (producto.getTipo()) {
         case LIBRO:       return "[LIBRO] " + ...;
@@ -142,10 +142,10 @@ public String generarEtiqueta(Producto producto) {
 
 **Problema:** agregar un tipo nuevo (p. ej. `DEPORTE`) obligaba a modificar las **dos** clases.
 
-#### DespuÃ©s de refactorizar (tÃ©cnica: *Replace Conditional with Polymorphism* â€” Fowler, cap. 10)
+#### Después de refactorizar (técnica: *Replace Conditional with Polymorphism* — Fowler, cap. 10)
 
 ```java
-// TipoProducto.java â€” cada constante implementa su propio comportamiento
+// TipoProducto.java — cada constante implementa su propio comportamiento
 public enum TipoProducto {
     LIBRO {
         public double calcularRecargoEnvio(double precio) { return 0.0; }
@@ -161,49 +161,170 @@ public enum TipoProducto {
     public abstract String generarEtiqueta(String nombre);
 }
 
-// ClasificadorProducto.java â€” sin switch
+// ClasificadorProducto.java — sin switch
 public double calcularRecargoEnvio(Producto producto) {
     return producto.getTipo().calcularRecargoEnvio(producto.getPrecio());
 }
 
-// EtiquetadoProducto.java â€” sin switch
+// EtiquetadoProducto.java — sin switch
 public String generarEtiqueta(Producto producto) {
     return producto.getTipo().generarEtiqueta(producto.getNombre());
 }
 ```
 
-**Resultado:** cero `switch` en `ClasificadorProducto` ni `EtiquetadoProducto`. Agregar `DEPORTE` = aÃ±adir 1 constante al enum.
+**Resultado:** cero `switch` en `ClasificadorProducto` ni `EtiquetadoProducto`. Agregar `DEPORTE` = añadir 1 constante al enum.
 
 ---
 
-### Resultado de `mvn test` â€” Parte 1
+### Resultado de `mvn test` — Parte 1
 
 ```
 [INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
 
-Pruebas en verde **antes y despuÃ©s** de cada refactorizaciÃ³n, sin modificarlas.
+Pruebas en verde **antes y después** de cada refactorización, sin modificarlas.
 
 ---
 
-### DecisiÃ³n de diseÃ±o 1 â€” ExtracciÃ³n del cÃ¡lculo de reorden
+### Decisión de diseño 1 — Extracción del cálculo de reorden
 
-> **Pregunta:** Â¿El cÃ¡lculo de la cantidad de reorden se extrae como mÃ©todo privado de `InventarioService` o como clase colaboradora `CalculadoraReorden`?
+> **Pregunta:** ¿El cálculo de la cantidad de reorden se extrae como método privado de `InventarioService` o como clase colaboradora `CalculadoraReorden`?
 
-**DecisiÃ³n:** mÃ©todo privado `calcularCantidadReorden(int stockMinimo, int nuevoStock)` dentro de `InventarioService`.
+**Decisión:** método privado `calcularCantidadReorden(int stockMinimo, int nuevoStock)` dentro de `InventarioService`.
 
-**JustificaciÃ³n:** la lÃ³gica es una expresiÃ³n aritmÃ©tica de una lÃ­nea (`stockMinimo * 3 - nuevoStock`), sin estado propio, sin dependencias externas y sin razÃ³n de cambio independiente del resto del servicio. Extraerla a una clase separada aÃ±adirÃ­a indirecciÃ³n sin ganancia real de cohesiÃ³n. Si en el futuro la fÃ³rmula dependiera de proveedores, temporadas o reglas configurables externas, entonces sÃ­ justificarÃ­a su propia clase con responsabilidad Ãºnica y posiblemente inyecciÃ³n de dependencias. Por ahora, un mÃ©todo privado con nombre descriptivo cumple perfectamente el principio de responsabilidad Ãºnica sin sobrÃ©-ingenierÃ­a.
-
----
-
-### DecisiÃ³n de diseÃ±o 2 â€” Mecanismo de polimorfismo para reemplazar el switch
-
-> **Pregunta:** Â¿Enum con mÃ©todos abstractos por constante o interfaz Strategy con una clase por tipo?
-
-**DecisiÃ³n:** enum `TipoProducto` con mÃ©todos abstractos implementados por cada constante.
-
-**JustificaciÃ³n:** el conjunto de tipos (`LIBRO`, `ELECTRONICO`, `ROPA`, `ALIMENTO`) es **cerrado y estable** â€” rara vez se agrega un tipo nuevo en este dominio â€”, y ninguna constante necesita colaboradores inyectados por Spring. En ese escenario, el enum abstracto elimina el switch duplicado con **cero clases adicionales** y mantiene toda la lÃ³gica de tipo en un Ãºnico lugar. La interfaz Strategy serÃ­a la opciÃ³n correcta si: (a) el conjunto de tipos fuera abierto y extensible en tiempo de ejecuciÃ³n, o (b) cada tipo requiriera servicios inyectados por el contenedor IoC. Como ninguna de esas condiciones aplica aquÃ­, el enum es mÃ¡s simple, mÃ¡s legible y suficiente.
+**Justificación:** la lógica es una expresión aritmética de una línea (`stockMinimo * 3 - nuevoStock`), sin estado propio, sin dependencias externas y sin razón de cambio independiente del resto del servicio. Extraerla a una clase separada añadiría indirección sin ganancia real de cohesión. Si en el futuro la fórmula dependiera de proveedores, temporadas o reglas configurables externas, entonces sí justificaría su propia clase con responsabilidad única y posiblemente inyección de dependencias. Por ahora, un método privado con nombre descriptivo cumple perfectamente el principio de responsabilidad única sin sobré-ingeniería.
 
 ---
 
+### Decisión de diseño 2 — Mecanismo de polimorfismo para reemplazar el switch
+
+> **Pregunta:** ¿Enum con métodos abstractos por constante o interfaz Strategy con una clase por tipo?
+
+**Decisión:** enum `TipoProducto` con métodos abstractos implementados por cada constante.
+
+**Justificación:** el conjunto de tipos (`LIBRO`, `ELECTRONICO`, `ROPA`, `ALIMENTO`) es **cerrado y estable** — rara vez se agrega un tipo nuevo en este dominio —, y ninguna constante necesita colaboradores inyectados por Spring. En ese escenario, el enum abstracto elimina el switch duplicado con **cero clases adicionales** y mantiene toda la lógica de tipo en un único lugar. La interfaz Strategy sería la opción correcta si: (a) el conjunto de tipos fuera abierto y extensible en tiempo de ejecución, o (b) cada tipo requiriera servicios inyectados por el contenedor IoC. Como ninguna de esas condiciones aplica aquí, el enum es más simple, más legible y suficiente.
+
+---
+
+## Parte 2 — Diagnóstico y Resolución de Acoplamiento entre Paquetes
+
+### El ciclo detectado
+
+Al agregar el módulo `reportes`, se introdujo una **dependencia cíclica** entre paquetes:
+
+```
+inventario  ──importa──▶  reportes
+   ▲                          │
+   └──────────importa──────────┘
+```
+
+- `InventarioService` (paquete `inventario`) importaba `ReporteBajoStockService` (paquete `reportes`)
+- `ReporteBajoStockService` (paquete `reportes`) importaba `InventarioService` (paquete `inventario`)
+
+El proyecto **compilaba sin errores** y todas las pruebas de negocio seguían en verde. El problema era de **arquitectura**, no de comportamiento: lo detectó únicamente `ArquitecturaPaquetesTest`.
+
+#### Salida de ArchUnit con el ciclo presente (Commit 7 — rojo)
+
+```
+java.lang.AssertionError: Architecture Violation [Priority: MEDIUM] -
+Rule 'slices matching 'com.universidad.refactoringu11.(*)..'
+should be free of cycles' was violated:
+Cycle detected: Slice inventario -> Slice reportes -> Slice inventario
+  - com.universidad.refactoringu11.inventario.InventarioService
+      imports com.universidad.refactoringu11.reportes.ReporteBajoStockService
+  - com.universidad.refactoringu11.reportes.ReporteBajoStockService
+      imports com.universidad.refactoringu11.inventario.InventarioService
+```
+
+---
+
+### La solución: Inversión de Dependencias
+
+Se extrajo la interfaz `NotificadorBajoStock` **en el paquete `inventario`** (dominio). Ambos paquetes ahora dependen de esa abstracción; reportes implementa el contrato:
+
+#### Antes (con ciclo)
+```
+inventario ──▶ ReporteBajoStockService (reportes)
+reportes   ──▶ InventarioService (inventario)
+```
+
+#### Después (sin ciclo, dirección única)
+```
+inventario  define  NotificadorBajoStock (interfaz)
+reportes    ──▶     inventario  (implementa NotificadorBajoStock, usa InventarioService)
+```
+
+```java
+// inventario/NotificadorBajoStock.java  ← dominio define el contrato
+public interface NotificadorBajoStock {
+    void notificar(Producto producto, int cantidadReorden);
+}
+
+// inventario/InventarioService.java  ← depende de la ABSTRACCIÓN
+private NotificadorBajoStock notificador;  // NO importa reportes
+
+// reportes/ReporteBajoStockService.java  ← infraestructura implementa
+public class ReporteBajoStockService implements NotificadorBajoStock { ... }
+```
+
+#### Salida de ArchUnit tras la corrección (Commit 8 — verde)
+
+```
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+#### Suite completa tras reestructuración de paquetes
+
+```
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+Las pruebas de caracterización de la Parte 1 se ejecutaron **sin modificar** tras los cambios de Parte 2 y todas siguen en verde.
+
+---
+
+### Decisión de diseño 3 — Ubicación de `NotificadorBajoStock`
+
+> **Pregunta:** ¿Por qué `NotificadorBajoStock` vive en el paquete `inventario` y no en `reportes`?
+
+**Decisión:** la interfaz reside en `inventario` (dominio).
+
+**Justificación:** aplicando la regla de Inversión de Dependencias — "los módulos de infraestructura dependen de dominio; dominio nunca depende de infraestructura" — el paquete de **mayor nivel de abstracción** en este proyecto es `inventario`: contiene las reglas de negocio puras (stock, reorden, movimientos) sin importar cómo se persiste, notifica ni reporta. `reportes` es infraestructura: implementa la notificación en una forma concreta (texto plano, lista en memoria). Al colocar la interfaz en el dominio, el dominio define **qué necesita** (ser notificado de bajo stock) sin saber **cómo** se implementa. `reportes` apunta hacia adentro implementando ese contrato, y el ciclo desaparece por diseño.
+
+---
+
+### Decisión de diseño 4 — Granularidad de `NotificadorBajoStock`
+
+> **Pregunta:** `notificar(Producto, int cantidadReorden)` por evento vs. `notificar(List<Producto>)` por lote. ¿Cuál y por qué?
+
+**Decisión:** notificación por evento individual.
+
+**Justificación:**
+
+| Criterio | Por evento | Por lote |
+|---|---|---|
+| Reactividad | Inmediata al detectar bajo stock | Diferida hasta fin del lote |
+| Simplicidad de implementación | Alta (sin acumulación de estado) | Media (requiere acumular y liberar) |
+| Caso de uso | Inventario en tiempo real | Importación masiva (cientos de productos) |
+| Costo de notificación | Bajo (println / lista en memoria) | — |
+
+En este proyecto la detección de bajo stock ocurre dentro de un único movimiento de inventario, y el costo de notificación es mínimo (registro en memoria). La notificación por evento es más simple, elimina la necesidad de acumular estado entre llamadas y permite reaccionar en la misma transacción. Se preferiría la notificación por lote si el canal de salida tuviera costo por mensaje (correo, SMS, llamada HTTP) y se procesaran cientos de productos en una sola operación de importación, donde consolidar todas las alertas en un solo envío reduciría costos y latencia.
+
+---
+
+## Historial de commits
+
+| # | Mensaje | Parte |
+|---|---|---|
+| 1 | `feat: crear inventario con Long Method en InventarioService y switch duplicado` | 1 |
+| 2 | `test: agregar pruebas de caracterizacion antes de refactorizar (red de seguridad)` | 1 |
+| 3 | `refactor: eliminar Long Method en actualizarInventario descomponiendo responsabilidades` | 1 |
+| 4 | `refactor: eliminar switch duplicado sobre TipoProducto con polimorfismo` | 1 |
+| 5 | `docs: documentar evidencia de code smells, decisiones de diseno y resultado de pruebas` | 1 |
+| 6 | `feat: agregar modulo de reportes con notificacion de bajo stock desde inventario` | 2 |
+| 7 | `test: agregar prueba de arquitectura que detecta ciclo entre inventario y reportes (en rojo)` | 2 |
+| 8 | `refactor: invertir la dependencia entre inventario y reportes extrayendo NotificadorBajoStock` | 2 |
+| 9 | `docs: completar README con diagrama de paquetes antes/despues y decisiones de la Parte 2` | 2 |
