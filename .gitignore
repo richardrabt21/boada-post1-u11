@@ -14,4 +14,4 @@ setup-git.ps1
 *.ipr
 *.iws
 .vscode/
-src/test/
+src/test/java/com/universidad/refactoringu11/ArquitecturaPaquetesTest.java
