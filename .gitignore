@@ -15,3 +15,5 @@ setup-git.ps1
 *.iws
 .vscode/
 src/test/java/com/universidad/refactoringu11/ArquitecturaPaquetesTest.java
+src/main/java/com/universidad/refactoringu11/inventario/NotificadorBajoStock.java
+src/main/java/com/universidad/refactoringu11/reportes/
