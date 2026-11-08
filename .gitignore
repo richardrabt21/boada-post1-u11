@@ -1,0 +1,17 @@
+﻿HELP.md
+target/
+_v1/
+_v3/
+_v4/
+_v5/
+_v6/
+_v8/
+_v9/
+setup-git.ps1
+!.mvn/wrapper/maven-wrapper.jar
+.idea
+*.iml
+*.ipr
+*.iws
+.vscode/
+src/test/
